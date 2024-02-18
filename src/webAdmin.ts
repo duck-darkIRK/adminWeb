@@ -681,3 +681,195 @@ export async function removePostAsync(userId: string, postId: string, accessToke
         throw error;
     }
 }
+
+export async function getRoomchatAsync(id: string, accessToken: string) {
+    const endpoint = 'http://103.155.161.116:3434/graphql';
+
+    const QUERY = `
+        query GetRomchatById ($roomchatId: String!) {
+            getRomchatById(roomchatId: $roomchatId) {
+                title
+                isDisplay
+                isSingle
+                isBlock
+                ownerUserId
+                description
+                imgDisplay
+                member
+                memberNickname
+                role
+                created_at
+                updated_at
+                id
+                memberOut {
+                    memberId
+                    messageCount
+                    created_at
+                    updated_at
+                }
+                data {
+                    id
+                    userId
+                    roomId
+                    isDisplay
+                    content
+                    fileUrl
+                    created_at
+                    updated_at
+                    interaction {
+                        id
+                        content
+                        userId
+                        isDisplay
+                        created_at
+                        updated_at
+                    }
+                }
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: QUERY,
+                variables: {
+                    roomchatId: id
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.getRomchatById
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+
+export async function getRoomchatByTitleAsync(id: string, accessToken: string) {
+    const endpoint = 'http://103.155.161.116:3434/graphql';
+
+    const QUERY = `
+        query GetRomchatByTitle ($roomchatId: String!) {
+            getRomchatByTitle (roomchatId: $roomchatId) {
+                id
+                isDisplay
+                ownerUserId
+                description
+                imgDisplay
+                isSingle
+                member
+                created_at
+                updated_at
+                data {
+                    id
+                    userId
+                    isDisplay
+                    content
+                    fileUrl
+                    created_at
+                    updated_at
+                    interaction {
+                        id
+                        content
+                        userId
+                        isDisplay
+                        created_at
+                        updated_at
+                    }
+                }
+                memberOut {
+                    memberId
+                    messageCount
+                    created_at
+                    updated_at
+                }
+                title
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: QUERY,
+                variables: {
+                    roomchatId: id
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.getRomchatByTitle
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+export async function getAllRoomchatAsync(userId: string, accessToken: string) {
+    const endpoint = 'http://103.155.161.116:3434/graphql';
+
+    const QUERY = `
+    query GetAllRomchatByUserId ($userId: String!) {
+        getAllRomchatByUserId(id: $userId) {
+            isDisplay
+            role
+            memberNickname
+            isBlock
+            isSingle
+            ownerUserId
+            description
+            imgDisplay
+            member
+            created_at
+            updated_at
+            memberOut {
+                memberId
+                messageCount
+                created_at
+                updated_at
+            }
+            id
+            title
+        }
+    }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: QUERY,
+                variables: {
+                    userId: userId
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.getAllRomchatByUserId
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}

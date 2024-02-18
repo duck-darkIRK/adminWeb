@@ -13,7 +13,7 @@ import {
   CButton,
   CCol,
   CFormLabel,
-  CFormSelect
+  CFormSelect,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
 import {
@@ -27,10 +27,12 @@ import {
   cifUs,
   cilPeople,
   cilMenu,
-  cilAlignCenter
+  cilAlignCenter,
 } from "@coreui/icons";
+import { makeRequest } from "../util/makeRequest";
+import { getRoomchatByTitleAsync, getRoomchatAsync } from "../webAdmin.ts";
 
-import PartUser from "./table/PartUser";
+import PartGroup from "./table/PartGroup";
 
 import avatar1 from "../assets/images/avatar1.jpg";
 import avatar2 from "../assets/images/avatar2.jpg";
@@ -41,64 +43,9 @@ class ManageGroup extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tableExample: [
-        {
-          avatar: { src: avatar1, status: "success" },
-          user: {
-            name: "Yiorgos Avraamu",
-            new: true,
-            registered: "Jan 1, 2021",
-          },
-          country: { name: "USA", flag: cifUs },
-          usage: {
-            value: 50,
-            period: "Jun 11, 2021 - Jul 10, 2021",
-            color: "success",
-          },
-          payment: { name: "Mastercard", icon: cibCcMastercard },
-          activity: "10 sec ago",
-        },
-        {
-          avatar: { src: avatar2, status: "danger" },
-          user: {
-            name: "Avram Tarasios",
-            new: false,
-            registered: "Jan 1, 2021",
-          },
-          country: { name: "Brazil", flag: cifBr },
-          usage: {
-            value: 22,
-            period: "Jun 11, 2021 - Jul 10, 2021",
-            color: "info",
-          },
-          payment: { name: "Visa", icon: cibCcVisa },
-          activity: "5 minutes ago",
-        },
-        {
-          avatar: { src: avatar3, status: "warning" },
-          user: { name: "Quintin Ed", new: true, registered: "Jan 1, 2021" },
-          country: { name: "India", flag: cifIn },
-          usage: {
-            value: 74,
-            period: "Jun 11, 2021 - Jul 10, 2021",
-            color: "warning",
-          },
-          payment: { name: "Stripe", icon: cibCcStripe },
-          activity: "1 hour ago",
-        },
-        {
-          avatar: { src: avatar4, status: "secondary" },
-          user: { name: "Enéas Kwadwo", new: true, registered: "Jan 1, 2021" },
-          country: { name: "France", flag: cifFr },
-          usage: {
-            value: 98,
-            period: "Jun 11, 2021 - Jul 10, 2021",
-            color: "danger",
-          },
-          payment: { name: "PayPal", icon: cibCcPaypal },
-          activity: "Last month",
-        },
-      ],
+      tableExample: [],
+      searchType: "1",
+      search: "",
     };
   }
 
@@ -106,28 +53,104 @@ class ManageGroup extends React.Component {
     return (
       <div>
         <div>
-        <CForm className="row g-3">
-          <CCol xs="auto" style={{flexGrow: 1}}>
-            <CFormLabel htmlFor="input" className="visually-hidden">
-              Password
-            </CFormLabel>
-            <CFormInput type="text" id="input" placeholder="Enter to find" />
-          </CCol>
-          <CCol>
-            <CFormSelect 
-              aria-label="Default select example"
-              options={[
-                { label: 'Find by ID', value: '1' },
-                { label: 'Find by Name', value: '2' },
-              ]}
-            />
-          </CCol>
-          <CCol xs="auto">
-            <CButton type="submit" className="mb-3">
-              Submit
-            </CButton>
-          </CCol>
-        </CForm>
+          <CForm className="row g-3">
+            <CCol xs="auto" style={{ flexGrow: 1 }}>
+              <CFormLabel htmlFor="input" className="visually-hidden">
+                Password
+              </CFormLabel>
+              <CFormInput
+                type="text"
+                id="input"
+                placeholder="Enter to find"
+                onChange={(e) => {
+                  this.setState({ search: e.target.value });
+                }}
+              />
+            </CCol>
+            <CCol>
+              <CFormSelect
+                aria-label="Default select example"
+                options={[
+                  { label: "Find by ID", value: "1" },
+                  { label: "Find by Title", value: "2" },
+                ]}
+                onChange={(e) => {
+                  this.setState({ searchType: e.target.value });
+                }}
+              />
+            </CCol>
+            <CCol xs="auto">
+              <CButton
+                type="submit"
+                className="mb-3"
+                onClick={() => {
+                  this.setState({ tableExample: []})
+                  if (this.state.searchType === "1") {
+                    makeRequest(getRoomchatAsync, this.state.search)
+                      .then((data) => {
+                        this.setState({tableExample: [
+                          {
+                            avatar: { src: data.imgDisplay, status: "success" },
+                            user: {
+                              name: data.title,
+                              new: true,
+                              registered: data.created_at,
+                              id: data.id
+                            },
+                            activity: data.updated_at,
+                            member: data.member.length,
+                            messages: data.data.length,
+                            adminId: data.ownerUserId
+                          },
+                        ]})
+                      })
+                      .catch((err) => alert(err));
+                  } else {
+                    makeRequest(getRoomchatByTitleAsync, this.state.search)
+                      .then((data) => {
+                        console.log(data)
+                        Array.isArray(data) ?
+                        this.setState({
+                          tableExample: data.map(item => {
+                            return {
+                              avatar: { src: item.imgDisplay, status: "success" },
+                              user: {
+                                name: item.title,
+                                new: true,
+                                registered: item.created_at,
+                                id: item.id
+                              },
+                              activity: item.updated_at,
+                              member: item.member.length,
+                              messages: item.data.length,
+                              adminId: item.ownerUserId
+                            }
+                          })
+                        }): 
+                        this.setState({tableExample: [
+                          {
+                            avatar: { src: data.imgDisplay, status: "success" },
+                            user: {
+                              name: data.title,
+                              new: true,
+                              registered: data.created_at,
+                              id: data.id
+                            },
+                            activity: data.updated_at,
+                            member: data.member.length,
+                            messages: data.data.length,
+                            adminId: data.ownerUserId
+                          },
+                        ]})
+                      })
+                      .catch((err) => alert(err));
+                  }
+                }}
+              >
+                Submit
+              </CButton>
+            </CCol>
+          </CForm>
         </div>
         <div>
           <CTable align="middle" className="mb-0 border" hover responsive>
@@ -136,17 +159,19 @@ class ManageGroup extends React.Component {
                 <CTableHeaderCell className="text-center">
                   <CIcon icon={cilPeople} />
                 </CTableHeaderCell>
-                <CTableHeaderCell>Admin</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">Members</CTableHeaderCell>
-                <CTableHeaderCell>Usage</CTableHeaderCell>
+                <CTableHeaderCell>Title</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">
+                  Members
+                </CTableHeaderCell>
+                <CTableHeaderCell>Messages</CTableHeaderCell>
                 <CTableHeaderCell>Activity</CTableHeaderCell>
-                <CTableHeaderCell className="text-center" />
+                {/* <CTableHeaderCell className="text-center" /> */}
                 <CTableHeaderCell className="text-center" />
               </CTableRow>
             </CTableHead>
             <CTableBody>
               {this.state.tableExample.map((item, index) => (
-                <PartUser index={index} item={item} />
+                <PartGroup index={index} item={item} />
               ))}
             </CTableBody>
           </CTable>
@@ -155,6 +180,5 @@ class ManageGroup extends React.Component {
     );
   }
 }
-
 
 export default ManageGroup;

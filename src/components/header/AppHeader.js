@@ -9,6 +9,7 @@ import CIcon from '@coreui/icons-react'
 import { 
   cilAccountLogout
 } from '@coreui/icons';
+import { setCookie } from '../../util/makeRequest'
 
 
 const AppHeader = () => {
@@ -40,11 +41,15 @@ const AppHeader = () => {
         <CNavItem>
           <CNavLink href="#/manage-group" style={{color: '#4f5d73', fontWeight: location === '/manage-group' ? 700 : 400}}>Groups</CNavLink>
         </CNavItem>
-        <CNavItem>
+        {/* <CNavItem>
           <CNavLink href="#" style={{color: '#4f5d73'}}>Report</CNavLink>
+        </CNavItem> */}
+      </CNav>
+      <CNav>
+        <CNavItem>
+          <CNavLink href="#/login" style={{color: '#4f5d73'}}>Login</CNavLink>
         </CNavItem>
       </CNav>
-      <CIcon icon={cilAccountLogout} size="xl" style={{rotate: '180deg'}}/>
     </div>
   )
 }

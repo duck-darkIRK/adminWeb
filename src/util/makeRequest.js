@@ -1,4 +1,5 @@
 import { updateAccessTokenAsync } from "../webAdmin.ts";
+import { HashRouter, Route, Routes, Navigate } from 'react-router-dom'
 
 export function setCookie(cname, cvalue, exdays) {
   const d = new Date();
@@ -23,6 +24,7 @@ export function getCookie(cname) {
   return "";
 }
 
+
 export async function makeRequest(callback, ...args) {
   return new Promise(async (resolve, reject) => {
     try {
@@ -45,7 +47,7 @@ export async function makeRequest(callback, ...args) {
           document.cookie = `refresh_token= ${newCookie.refreshToken}`;
           resolve(await makeRequest(callback, ...args));
         } else {
-          reject('Đã có lỗi không xác định');
+          reject('Chưa đăng nhập!');
         }
       } catch (error) {
         reject(error);
