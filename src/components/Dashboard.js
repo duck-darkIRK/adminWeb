@@ -3,6 +3,7 @@ import { UserParameter, DetailChart, TopUser } from './index'
 
 
 class Dashboard extends React.Component {
+
     render() {
         return (
             <>

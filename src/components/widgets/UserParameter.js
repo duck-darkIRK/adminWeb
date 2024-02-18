@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   CRow,
   CCol,
@@ -8,6 +8,8 @@ import { CChartBar, CChartLine } from "@coreui/react-chartjs";
 import CIcon from "@coreui/icons-react";
 import { cilArrowBottom, cilArrowTop } from "@coreui/icons";
 import { getDateFromOffset } from "../../util/date"
+import { getCookie, makeRequest } from "../../util/makeRequest.js";
+import { getAllPostAsync, getAllUserAsync } from "../../webAdmin.ts";
 
 class UserParameter extends React.Component {
   getDefaultDate() {
@@ -17,11 +19,51 @@ class UserParameter extends React.Component {
     }
     return date;
   }
+  componentDidMount() {
+    const UserHandle = async () => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      makeRequest(getAllUserAsync, getCookie("id"))
+        .then((data) => {
+          let tmpNewUserData = [];
+          for (let i = 8; i > 0; i--) {
+            let tmpPreDate = new Date(today);
+            tmpPreDate.setDate(today.getDate() - i);
+            let tmpNextDate = new Date(today);
+            tmpNextDate.setDate(today.getDate() - i + 1);
+            tmpNewUserData.push(data.filter(item => new Date(item.created_at) >= tmpPreDate && new Date(item.created_at) <= tmpNextDate).length)
+          }
+          this.setState({ numberUserPerDay: tmpNewUserData })
+        })
+        .catch((error) => alert(error))
+
+      makeRequest(getAllPostAsync, getCookie("id"))
+        .then((data) => {
+          let tmpNewPostData = [];
+          for (let i = 8; i > 0; i--) {
+            let tmpPreDate = new Date(today);
+            tmpPreDate.setDate(today.getDate() - i);
+            let tmpNextDate = new Date(today);
+            tmpNextDate.setDate(today.getDate() - i + 1);
+            tmpNewPostData.push(data.filter(item => new Date(item.created_at) >= tmpPreDate && new Date(item.created_at) <= tmpNextDate).length)
+          }
+          this.setState({ numberPostPerDay: tmpNewPostData })
+        })
+        .catch((error) => alert(error))
+    }
+    UserHandle()
+  }
+
+
 
   constructor(props) {
     super(props);
     this.state = {
-      defaultValue: [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
+      numberUserPerDay: [0, 0, 0, 0, 0, 0, 0, 0],
+      numberPostPerDay: [0, 0, 0, 0, 0, 0, 0, 0],
+      numberGroupPerDay: [0, 0, 0, 0, 0, 0, 0, 0],
+      defaultValue: [50, 50, 50, 50, 50, 50, 50, 50],
       defaultMonths: this.getDefaultDate(),
       defaultInstance: 0,
       defaultInstanceRate: 0,
@@ -31,19 +73,36 @@ class UserParameter extends React.Component {
   render() {
     return (
       <CRow>
-        <CCol sm={3}>
+        <CCol sm={4}>
           <CWidgetStatsA
             className="mb-4"
             color="primary"
             value={
               <>
-                ${this.state.defaultInstance}{" "}
+                ${this.state.numberUserPerDay[7]} {" "}
                 <span className="fs-6 fw-normal">
-                  (So với hôm qua: {this.state.defaultInstanceRate}%<CIcon icon={cilArrowTop} />)
+                  {this.state.numberUserPerDay[7] >= this.state.numberUserPerDay[6] ? (
+                    <>
+                      So với hôm qua: {
+                        this.state.numberUserPerDay[6] === 0 ? (Math.floor(this.state.numberUserPerDay[7] / (this.state.numberUserPerDay[6] + 1) * 100))
+                          : (Math.floor(this.state.numberUserPerDay[7] / (this.state.numberUserPerDay[6]) * 100))
+                      }%
+                      <CIcon icon={cilArrowTop} />
+                    </>
+                  ) : (
+                    <>
+                      So với hôm qua: {
+                        this.state.numberUserPerDay[7] === 0 ? (Math.floor(this.state.numberUserPerDay[6] / (this.state.numberUserPerDay[7] + 1) * 100))
+                          : (Math.floor(this.state.numberUserPerDay[6] / (this.state.numberUserPerDay[7]) * 100))
+                      }%
+                      <CIcon icon={cilArrowBottom} />
+                    </>
+                  )}
                 </span>
               </>
+
             }
-            title="Online user"
+            title="New user"
             chart={
               <CChartLine
                 className="mt-3 mx-3"
@@ -52,11 +111,11 @@ class UserParameter extends React.Component {
                   labels: this.state.defaultMonths,
                   datasets: [
                     {
-                      label: "Số người truy cập",
+                      label: "Số người dùng mới",
                       backgroundColor: "transparent",
                       borderColor: "rgba(255,255,255,.55)",
                       pointBackgroundColor: "#321fdb",
-                      data: this.state.defaultValue,
+                      data: this.state.numberUserPerDay
                     }
                   ],
                 }}
@@ -105,15 +164,31 @@ class UserParameter extends React.Component {
             }
           />
         </CCol>
-        <CCol sm={3}>
+        <CCol sm={4}>
           <CWidgetStatsA
             className="mb-4"
             color="info"
             value={
               <>
-                ${this.state.defaultInstance}{" "}
+                ${this.state.numberPostPerDay[7]} {" "}
                 <span className="fs-6 fw-normal">
-                  (So với hôm qua: {this.state.defaultInstanceRate}%<CIcon icon={cilArrowTop} />)
+                  {this.state.numberPostPerDay[7] >= this.state.numberPostPerDay[6] ? (
+                    <>
+                      So với hôm qua: {
+                        this.state.numberPostPerDay[6] === 0 ? (Math.floor(this.state.numberPostPerDay[7] / (this.state.numberPostPerDay[6] + 1) * 100))
+                          : (Math.floor(this.state.numberPostPerDay[7] / (this.state.numberPostPerDay[6]) * 100))
+                      }%
+                      <CIcon icon={cilArrowTop} />
+                    </>
+                  ) : (
+                    <>
+                      So với hôm qua: {
+                        this.state.numberPostPerDay[7] === 0 ? (Math.floor(this.state.numberPostPerDay[6] / (this.state.numberPostPerDay[7] + 1) * 100))
+                          : (Math.floor(this.state.numberPostPerDay[6] / (this.state.numberPostPerDay[7]) * 100))
+                      }%
+                      <CIcon icon={cilArrowBottom} />
+                    </>
+                  )}
                 </span>
               </>
             }
@@ -126,11 +201,11 @@ class UserParameter extends React.Component {
                   labels: this.state.defaultMonths,
                   datasets: [
                     {
-                      label: "My First dataset",
+                      label: "Số bài đăng mới",
                       backgroundColor: "transparent",
                       borderColor: "rgba(255,255,255,.55)",
                       pointBackgroundColor: "#39f",
-                      data: this.state.defaultValue,
+                      data: this.state.numberPostPerDay,
                     },
                   ],
                 }}
@@ -178,15 +253,31 @@ class UserParameter extends React.Component {
             }
           />
         </CCol>
-        <CCol sm={3}>
+        <CCol sm={4}>
           <CWidgetStatsA
             className="mb-4"
             color="warning"
             value={
               <>
-                ${this.state.defaultInstance}{" "}
+                ${this.state.numberGroupPerDay[7]} {" "}
                 <span className="fs-6 fw-normal">
-                  (So với hôm qua: {this.state.defaultInstanceRate}%<CIcon icon={cilArrowTop} />)
+                  {this.state.numberGroupPerDay[7] >= this.state.numberGroupPerDay[6] ? (
+                    <>
+                      So với hôm qua: {
+                        this.state.numberGroupPerDay[6] === 0 ? (Math.floor(this.state.numberGroupPerDay[7] / (this.state.numberGroupPerDay[6] + 1) * 100))
+                          : (Math.floor(this.state.numberGroupPerDay[7] / (this.state.numberGroupPerDay[6]) * 100))
+                      }%
+                      <CIcon icon={cilArrowTop} />
+                    </>
+                  ) : (
+                    <>
+                      So với hôm qua: {
+                        this.state.numberGroupPerDay[7] === 0 ? (Math.floor(this.state.numberGroupPerDay[6] / (this.state.numberGroupPerDay[7] + 1) * 100))
+                          : (Math.floor(this.state.numberGroupPerDay[6] / (this.state.numberGroupPerDay[7]) * 100))
+                      }%
+                      <CIcon icon={cilArrowBottom} />
+                    </>
+                  )}
                 </span>
               </>
             }
@@ -199,10 +290,10 @@ class UserParameter extends React.Component {
                   labels: this.state.defaultMonths,
                   datasets: [
                     {
-                      label: "My First dataset",
+                      label: "Số nhóm chat mới",
                       backgroundColor: "rgba(255,255,255,.2)",
                       borderColor: "rgba(255,255,255,.55)",
-                      data: this.state.defaultValue,
+                      data: this.state.numberGroupPerDay,
                       fill: true,
                     },
                   ],
@@ -240,7 +331,7 @@ class UserParameter extends React.Component {
             }
           />
         </CCol>
-        <CCol sm={3}>
+        {/* <CCol sm={3}>
           <CWidgetStatsA
             className="mb-4"
             color="danger"
@@ -303,7 +394,7 @@ class UserParameter extends React.Component {
               />
             }
           />
-        </CCol>
+        </CCol> */}
       </CRow>
     );
   }
