@@ -30,7 +30,7 @@ const AppHeader = () => {
     }}>
       <CNav>
         <CNavItem>
-          <CNavLink href="#" style={{color: '#4f5d73', fontWeight: location === '/dashboard' ? 700 : 400 }}>Dashboard</CNavLink>
+          <CNavLink href="#/dashboard" style={{color: '#4f5d73', fontWeight: location === '/dashboard' ? 700 : 400 }}>Dashboard</CNavLink>
         </CNavItem>
         <CNavItem>
           <CNavLink href="#/manage-user" style={{color: '#4f5d73', fontWeight: location === '/manage-user' ? 700 : 400}}>Users</CNavLink>

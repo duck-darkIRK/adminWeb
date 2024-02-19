@@ -17,7 +17,7 @@ const AppContent = () => {
             <Route path='manage-user' element={<ManageUser />} name='ManageUser'/>
             <Route path='manage-group' element={<ManageGroup />} name='ManageGroup'/>
             <Route path='manage-post' element={<ManagePost />} name='ManagePost'/>
-            <Route path="" element={<Navigate to="dashboard" replace />} />
+            <Route path="" element={<Navigate to="login" replace />} />
             <Route path="*" element={<Navigate to="404" replace />}/>
         </Routes>
       </Suspense>
