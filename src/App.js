@@ -11,7 +11,7 @@ const loading = (
 const MainLayout = React.lazy(() => import('./layouts/MainLayout'))
 const Page404 = React.lazy(() => import('./views/Page404'))
 const Login = React.lazy(() => import('./views/Login.js'))
-
+const Privacy = React.lazy(() => import('./views/Privacy'))
 class App extends React.Component {
 
   render(){
@@ -20,6 +20,7 @@ class App extends React.Component {
         <Suspense fallback={loading}>
           <Routes>
             <Route exact path="/login" name="Login" element={<Login />} />
+            <Route exact path='/privacy' element={<Privacy />} name='Privacy'/>
             <Route exact path="/404" name="Page 404" element={<Page404 />} />
             <Route path="*" name="Home" element={<MainLayout />} />
           </Routes>
