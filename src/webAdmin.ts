@@ -159,6 +159,7 @@ export async function searchUserAsync(content: string, accessToken: string) {
             id
             email
             role
+            isOnline
             created_at
             updated_at
             detail {

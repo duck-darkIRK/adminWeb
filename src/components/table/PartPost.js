@@ -20,7 +20,7 @@ class PartUser extends React.Component {
       index: props.index,
       item: props.item,
       onHoverIcon: false,
-      isDelete: false,
+      isDelete: props.detailData.isDelete,
       viewDetail: false,
       detailData: props.detailData,
       visible: false,
@@ -66,6 +66,7 @@ class PartUser extends React.Component {
           <CTableDataCell
             className="text-center"
             onClick={() => {
+              if (this.state.isDelete === true) return;
               this.setState({ visible: true });
             }}
           >
@@ -120,7 +121,7 @@ class PartUser extends React.Component {
         <CButton color="primary"
           onClick={() => {
             this.setState({visible: false, isDelete: true})
-            makeRequest(removePostAsync, this.state.posterId, this.state.id)
+            makeRequest(removePostAsync, this.state.detailData.posterId, this.state.detailData.id)
           }}
         >Save changes</CButton>
       </CModalFooter>

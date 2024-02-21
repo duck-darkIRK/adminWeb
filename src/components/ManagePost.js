@@ -18,8 +18,8 @@ import {
 
 import PartUser from "./table/PartPost";
 
-import { makeRequest } from "../util/makeRequest";
-import { getPostAsync, searchPostAsync, getUserDataByIdAsync } from '../webAdmin.ts'
+import { getCookie, makeRequest } from "../util/makeRequest";
+import { getPostAsync, searchPostAsync, getUserDataByIdAsync, getAllPostAsync } from '../webAdmin.ts'
 
 class ManagePost extends React.Component {
   constructor(props) {
@@ -69,9 +69,9 @@ class ManagePost extends React.Component {
                           new: true,
                           registered: data.created_at,
                         },
-                        activity: "10 sec ago",
-                        like: data.interaction.length,
-                        comment: data.comment.length
+                        activity: data.updated_at,
+                        like: data.interaction.filter(it => it.isDisplay === true).length,
+                        comment: data.comment.filter(it => it.isDisplay === true).length
                     }]
                     const detailPostData = [
                       {
@@ -90,42 +90,80 @@ class ManagePost extends React.Component {
                 })
                 .catch((error) => alert(error))
               } else {
-                makeRequest(searchPostAsync, this.state.search)
-                .then((data) => {
-                  data.forEach((dataSheet) => {
-                    makeRequest(getUserDataByIdAsync, dataSheet.ownerUserId)
-                    .then(userData => {
-                      const newData = data.map(item => {
-                        console.log(item)
-                        return {
-                          avatar: { src: userData.detail.avatarUrl, status: "success" },
-                          user: {
-                            name: userData.detail.name,
-                            new: true,
-                            registered: item.created_at,
-                          },
-                          activity: "10 sec ago",
-                          like: item.interaction.length,
-                          comment: item.comment.length
-                      }})
-                      const detailPostData = data.map(item => {
-                        return {
-                          id: item.id,
-                          content: item.content,
-                          poster: userData.detail.name,
-                          posterId: userData.id,
-                          postAt: item.created_at,
-                          updateAt: item.updated_at,
-                          img: item.fileUrl[0]
-                        }
+                if (this.state.search.length === 0) {
+                  makeRequest(getAllPostAsync, getCookie("id"))
+                  .then((data) => {
+                    let newData = []
+                    let detailPostData = []
+                    data.forEach((dataSheet) => {
+                      makeRequest(getUserDataByIdAsync, dataSheet.ownerUserId)
+                      .then(userData => {
+                        newData.push(
+                          {
+                            avatar: { src: userData.detail.avatarUrl, status: "success" },
+                            user: {
+                              name: userData.detail.name,
+                              new: true,
+                              registered: dataSheet.created_at,
+                            },
+                            activity: dataSheet.updated_at,
+                            like: dataSheet.interaction.filter(it => it.isDisplay === true).length,
+                            comment: dataSheet.comment.filter(it => it.isDisplay === true).length
+                          })
+                        detailPostData.push({
+                            id: dataSheet.id,
+                            content: dataSheet.content,
+                            poster: userData.detail.name,
+                            posterId: userData.id,
+                            postAt: dataSheet.created_at,
+                            updateAt: dataSheet.updated_at,
+                            isDelete: !dataSheet.isDisplay,
+                            img: dataSheet.fileUrl[0]
+                          })
+                        this.setState({postData: newData, detailData: detailPostData})
                       })
-                      console.log(newData)
-                      this.setState({postData: newData, detailData: detailPostData})
+                      .catch((error) => alert(error))
                     })
-                    .catch((error) => alert(error))
                   })
-                })
-                .catch((error) => alert(error))
+                  .catch((error) => alert(error))
+                }
+                else {
+                  makeRequest(searchPostAsync, this.state.search)
+                  .then((data) => {
+                    let newData = []
+                    let detailPostData = []
+                    data.forEach((dataSheet) => {
+                      makeRequest(getUserDataByIdAsync, dataSheet.ownerUserId)
+                      .then(userData => {
+                        newData.push(
+                          {
+                            avatar: { src: userData.detail.avatarUrl, status: "success" },
+                            user: {
+                              name: userData.detail.name,
+                              new: true,
+                              registered: dataSheet.created_at,
+                            },
+                            activity: dataSheet.updated_at,
+                            like: dataSheet.interaction.filter(it => it.isDisplay === true).length,
+                            comment: dataSheet.comment.filter(it => it.isDisplay === true).length
+                          })
+                        detailPostData.push({
+                            id: dataSheet.id,
+                            content: dataSheet.content,
+                            poster: userData.detail.name,
+                            posterId: userData.id,
+                            postAt: dataSheet.created_at,
+                            updateAt: dataSheet.updated_at,
+                            isDelete: !dataSheet.isDisplay,
+                            img: dataSheet.fileUrl[0]
+                          })
+                        this.setState({postData: newData, detailData: detailPostData})
+                      })
+                      .catch((error) => alert(error))
+                    })
+                  })
+                  .catch((error) => alert(error))
+                }
               }
             }}>
               Submit

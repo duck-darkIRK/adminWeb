@@ -51,7 +51,7 @@ class PartUser extends React.Component {
               title={this.state.item.country.name}
             />
           </CTableDataCell>
-          <CTableDataCell>
+          {/* <CTableDataCell>
             <div className="clearfix">
               <div className="float-start">
                 <strong>{this.state.item.usage.value}%</strong>
@@ -67,7 +67,7 @@ class PartUser extends React.Component {
               color={this.state.item.usage.color}
               value={this.state.item.usage.value}
             />
-          </CTableDataCell>
+          </CTableDataCell> */}
           <CTableDataCell>
             <div className="small text-medium-emphasis">Last login</div>
             <strong>{this.state.item.activity}</strong>

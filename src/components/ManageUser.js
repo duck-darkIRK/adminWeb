@@ -75,10 +75,10 @@ class ManageUser extends React.Component {
                       country: { name: "VietNam", flag: cifVn },
                       usage: {
                         value: 50,
-                        period: "Jun 11, 2021 - Jul 10, 2021",
+                        period: `${new Date(item.created_at).toUTCString()} - ${new Date().toUTCString()}`,
                         color: "success",
                       },
-                      activity: "10 sec ago",
+                      activity: item.updated_at,
                       banned: item.role === "BANNED"
                     }]
                   const detailData = [[
@@ -103,7 +103,7 @@ class ManageUser extends React.Component {
                     {
                       count: 4,
                       Data: "Online",
-                      Value: "???",
+                      Value:`${item.isOnline}`,
                       _cellProps: { id: { scope: "column" } },
                     },
                     {
@@ -149,10 +149,10 @@ class ManageUser extends React.Component {
                       country: { name: "VietNam", flag: cifVn },
                       usage: {
                         value: 50,
-                        period: "Jun 11, 2021 - Jul 10, 2021",
+                        period: `${new Date(item.created_at).toUTCString()} - ${new Date().toUTCString()}`,
                         color: "success",
                       },
-                      activity: "10 sec ago",
+                      activity: item.updated_at,
                       banned: item.role === "BANNED"
                     }
                   })
@@ -179,7 +179,7 @@ class ManageUser extends React.Component {
                       {
                         count: 4,
                         Data: "Online",
-                        Value: "???",
+                        Value: `${item.isOnline}`,
                         _cellProps: { id: { scope: "column" } },
                       },
                       {
@@ -228,7 +228,7 @@ class ManageUser extends React.Component {
                 <CTableHeaderCell className="text-center">
                   Country
                 </CTableHeaderCell>
-                <CTableHeaderCell>Usage</CTableHeaderCell>
+                {/* <CTableHeaderCell>Usage</CTableHeaderCell> */}
                 <CTableHeaderCell>Activity</CTableHeaderCell>
                 <CTableHeaderCell className="text-center" />
                 <CTableHeaderCell className="text-center" />

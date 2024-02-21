@@ -14,7 +14,7 @@ import {
 function PostDetail(props){
 
   return (
-    <CCard style={{ width: "30rem" }}>
+    <CCard style={{ width: "30rem", overflow: "scroll" }}>
       <CCardImage orientation="top" src={props.detailData.img} />
       <CCardBody>
         <CCardTitle>{}</CCardTitle>

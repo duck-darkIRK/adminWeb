@@ -138,7 +138,7 @@ class ManageGroup extends React.Component {
                             },
                             activity: data.updated_at,
                             member: data.member.length,
-                            messages: data.data.length,
+                            messages: data.data.filter(it => it.isDisplay === true).length,
                             adminId: data.ownerUserId
                           },
                         ]})
