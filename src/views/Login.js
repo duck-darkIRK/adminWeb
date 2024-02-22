@@ -14,7 +14,7 @@ import {
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
 import { cilLockLocked, cilUser } from "@coreui/icons";
-import { LoginAsync, LoginDto, getUserDataByIdAsync, getAllUserAsync } from '../webAdmin.ts'
+import { LoginAsync, LoginDto, getUserDataByIdAsync } from '../webAdmin.ts'
 import { Navigate } from "react-router-dom";
 
 class Login extends React.Component {
@@ -31,6 +31,9 @@ class Login extends React.Component {
     try{
       const dto = new LoginDto(email, password);
       const Login = await LoginAsync(dto);
+      const dataUser = await getUserDataByIdAsync(Login.id, Login.accessToken);
+      if ("errors" in dataUser) return;
+      if (dataUser.role !== "ADMIN") return;
       console.log(Login)
       if(Login.id){
         document.cookie = `access_token= ${Login.accessToken};`

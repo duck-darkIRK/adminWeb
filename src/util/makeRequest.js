@@ -45,7 +45,12 @@ export async function makeRequest(callback, ...args) {
           document.cookie = `access_token= ${newCookie.accessToken}`;
           document.cookie = `id= ${newCookie.id}`;
           document.cookie = `refresh_token= ${newCookie.refreshToken}`;
-          resolve(await makeRequest(callback, ...args));
+          const data2 = await callback(...args, newCookie.accessToken);
+          console.log("🚀 ~ returnnewPromise ~ data:", data2 )
+          if ("errors" in data2) {
+            reject(data2.errors[0].message)
+          }
+          resolve(data2);
         } else {
           reject('Chưa đăng nhập!');
         }
