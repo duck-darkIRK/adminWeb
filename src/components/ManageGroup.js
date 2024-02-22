@@ -29,8 +29,8 @@ import {
   cilMenu,
   cilAlignCenter,
 } from "@coreui/icons";
-import { makeRequest } from "../util/makeRequest";
-import { getRoomchatByTitleAsync, getRoomchatAsync } from "../webAdmin.ts";
+import { makeRequest, getCookie } from "../util/makeRequest";
+import { getRoomchatByTitleAsync, getRoomchatAsync, getAllRoomchatAsync } from "../webAdmin.ts";
 
 import PartGroup from "./table/PartGroup";
 
@@ -63,7 +63,7 @@ class ManageGroup extends React.Component {
                 id="input"
                 placeholder="Enter to find"
                 onChange={(e) => {
-                  this.setState({ search: e.target.value });
+                  this.setState({ search: e.target.value.trim() });
                 }}
               />
             </CCol>
@@ -106,9 +106,19 @@ class ManageGroup extends React.Component {
                       })
                       .catch((err) => alert(err));
                   } else {
-                    makeRequest(getRoomchatByTitleAsync, this.state.search)
+                    if (!this.state.search){
+                      makeRequest(getAllRoomchatAsync, getCookie('id'))
                       .then((data) => {
-                        console.log(data)
+                        if (!Array.isArray(data)) {
+                          if (data.isSingle) {
+                            return []
+                          } else { return data }
+                        } else {
+                          return data.filter(item => {
+                            return !item.isSingle
+                        })}
+                      })
+                      .then((data) => {
                         Array.isArray(data) ?
                         this.setState({
                           tableExample: data.map(item => {
@@ -144,6 +154,46 @@ class ManageGroup extends React.Component {
                         ]})
                       })
                       .catch((err) => alert(err));
+                    } else {
+                      makeRequest(getRoomchatByTitleAsync, this.state.search)
+                        .then((data) => {
+                          console.log(data)
+                          Array.isArray(data) ?
+                          this.setState({
+                            tableExample: data.map(item => {
+                              return {
+                                avatar: { src: item.imgDisplay, status: "success" },
+                                user: {
+                                  name: item.title,
+                                  new: true,
+                                  registered: item.created_at,
+                                  id: item.id
+                                },
+                                activity: item.updated_at,
+                                member: item.member.length,
+                                messages: item.data.length,
+                                adminId: item.ownerUserId
+                              }
+                            })
+                          }): 
+                          this.setState({tableExample: [
+                            {
+                              avatar: { src: data.imgDisplay, status: "success" },
+                              user: {
+                                name: data.title,
+                                new: true,
+                                registered: data.created_at,
+                                id: data.id
+                              },
+                              activity: data.updated_at,
+                              member: data.member.length,
+                              messages: data.data.filter(it => it.isDisplay === true).length,
+                              adminId: data.ownerUserId
+                            },
+                          ]})
+                        })
+                        .catch((err) => alert(err));
+                    }
                   }
                 }}
               >

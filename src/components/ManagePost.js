@@ -41,7 +41,7 @@ class ManagePost extends React.Component {
             <CFormTextarea 
               placeholder="Enter to find"
               rows={1}
-              onChange={(e) => this.setState({search: e.target.value})} 
+              onChange={(e) => this.setState({search: e.target.value.trim() })} 
             ></CFormTextarea>
           </CCol>
           <CCol>

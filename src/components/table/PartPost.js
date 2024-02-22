@@ -1,17 +1,21 @@
 import React from "react";
-import { CAvatar, CProgress, CTableDataCell, CTableRow, CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter, CButton } from "@coreui/react";
-import CIcon from "@coreui/icons-react";
 import {
-  cilMenu,
-  cilAlignCenter,
-  cilTrash,
-  cilTransfer
-} from "@coreui/icons";
+  CAvatar,
+  CProgress,
+  CTableDataCell,
+  CTableRow,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter,
+  CButton,
+} from "@coreui/react";
+import CIcon from "@coreui/icons-react";
+import { cilMenu, cilAlignCenter, cilTrash, cilTransfer, cilX } from "@coreui/icons";
 import PostDetail from "../card/PostDetail";
 import { makeRequest } from "../../util/makeRequest";
-import { removePostAsync } from "../../webAdmin.ts"
-
-
+import { removePostAsync } from "../../webAdmin.ts";
 
 class PartUser extends React.Component {
   constructor(props) {
@@ -34,7 +38,7 @@ class PartUser extends React.Component {
             <CAvatar
               size="md"
               src={this.state.item.avatar.src}
-              status={this.state.item.avatar.status}
+              // status={this.state.item.avatar.status}
             />
           </CTableDataCell>
           <CTableDataCell>
@@ -47,9 +51,7 @@ class PartUser extends React.Component {
           <CTableDataCell className="text-center">
             {this.state.item.like}
           </CTableDataCell>
-          <CTableDataCell>
-            {this.state.item.comment}
-          </CTableDataCell>
+          <CTableDataCell>{this.state.item.comment}</CTableDataCell>
           <CTableDataCell>
             <div className="small text-medium-emphasis">Last login</div>
             <strong>{this.state.item.activity}</strong>
@@ -60,7 +62,9 @@ class PartUser extends React.Component {
               icon={this.state.onHoverIcon ? cilAlignCenter : cilMenu}
               onMouseEnter={() => this.setState({ onHoverIcon: true })}
               onMouseLeave={() => this.setState({ onHoverIcon: false })}
-              onClick={() => this.setState({ viewDetail: !this.state.viewDetail })}
+              onClick={() =>
+                this.setState({ viewDetail: !this.state.viewDetail })
+              }
             />
           </CTableDataCell>
           <CTableDataCell
@@ -72,60 +76,106 @@ class PartUser extends React.Component {
           >
             <CIcon
               size="xl"
-              icon={this.state.isDelete ? cilTransfer : cilTrash}
+              icon={this.state.isDelete ? cilX : cilTrash}
             />
           </CTableDataCell>
         </CTableRow>
-        {this.state.viewDetail && <div style={{
-          position: "fixed",
-          top: '0',
-          left: '0',
-          width: '100vw',
-          height: '100vh',
-          backgroundColor: 'white',
-          opacity: 0.5
-        }} onClick={() => {this.setState({viewDetail: !this.state.viewDetail})}}></div>}
-        <div style={{
-          position: "fixed",
-          top: '50vh',
-          left: '50vw',
-          transform: "translate(-50%, -50%)",
-        }}>
-          {this.state.viewDetail && <PostDetail detailData={this.state.detailData}/> }
+        {this.state.viewDetail && (
+          <div
+            style={{
+              position: "fixed",
+              top: "0",
+              left: "0",
+              width: "100vw",
+              height: "100vh",
+              backgroundColor: "white",
+              opacity: 0.5,
+            }}
+            onClick={() => {
+              this.setState({ viewDetail: !this.state.viewDetail });
+            }}
+          ></div>
+        )}
+        <div
+          style={{
+            position: "fixed",
+            top: "50vh",
+            left: "50vw",
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          {this.state.viewDetail && (
+            <PostDetail detailData={this.state.detailData} />
+          )}
         </div>
         <CModal
-      visible={this.state.visible}
-      onClose={() => this.setState({visible: false})}
-      aria-labelledby="LiveDemoExampleLabel"
-    >
-      <CModalHeader onClose={() => this.setState({visible: false})}>
-        <CModalTitle id="LiveDemoExampleLabel">Nút xóa - Trách nhiệm to lớn</CModalTitle>
-      </CModalHeader>
-      <CModalBody>
-      <p>Nút xóa bài viết tuy nhỏ bé nhưng ẩn chứa trách nhiệm to lớn. Mỗi lần nhấp chuột, một tiếng nói sẽ bị tước đi, thông tin biến mất vĩnh viễn.</p>
-    <h4>Hãy sử dụng nút xóa một cách cẩn trọng:</h4>
-    <ul>
-        <li><h6>Tôn trọng quyền tự do ngôn luận:</h6> Chỉ xóa bài viết khi vi phạm quy tắc, gây ảnh hưởng tiêu cực hoặc vi phạm pháp luật.</li>
-        <li><h6>Giữ gìn sự minh bạch:</h6> Thông báo rõ lý do xóa bài, đảm bảo sự công bằng và tránh nghi ngờ kiểm duyệt.</li>
-        <li><h6>Bảo vệ quyền riêng tư:</h6> Tránh tiết lộ thông tin cá nhân nhạy cảm.</li>
-        <li><h6>Lường trước ảnh hưởng:</h6> Xóa bài có thể ảnh hưởng đến thảo luận, tranh luận hoặc chia sẻ thông tin hữu ích.</li>
-        <li><h6>Cân nhắc trách nhiệm pháp lý:</h6> Tránh vi phạm luật pháp hoặc gây thiệt hại cho người khác.</li>
-    </ul>
-    <p>Nút xóa là công cụ mạnh mẽ nhưng đi kèm trách nhiệm to lớn. Hãy sử dụng nó một cách có ý thức, minh bạch và tôn trọng quyền lợi cộng đồng.</p>
-    <h6 style={{color: "red"}}>Bạn chắc chắn muốn xóa chứ!</h6>
-      </CModalBody>
-      <CModalFooter>
-        <CButton color="secondary" onClick={() => this.setState({visible: false})}>
-          Close
-        </CButton>
-        <CButton color="primary"
-          onClick={() => {
-            this.setState({visible: false, isDelete: true})
-            makeRequest(removePostAsync, this.state.detailData.posterId, this.state.detailData.id)
-          }}
-        >Save changes</CButton>
-      </CModalFooter>
-    </CModal>
+          visible={this.state.visible}
+          onClose={() => this.setState({ visible: false })}
+          aria-labelledby="LiveDemoExampleLabel"
+        >
+          <CModalHeader onClose={() => this.setState({ visible: false })}>
+            <CModalTitle id="LiveDemoExampleLabel">
+              Nút xóa - Trách nhiệm to lớn
+            </CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+            <p>
+              Nút xóa bài viết tuy nhỏ bé nhưng ẩn chứa trách nhiệm to lớn. Mỗi
+              lần nhấp chuột, một tiếng nói sẽ bị tước đi, thông tin biến mất
+              vĩnh viễn.
+            </p>
+            <h4>Hãy sử dụng nút xóa một cách cẩn trọng:</h4>
+            <ul>
+              <li>
+                <h6>Tôn trọng quyền tự do ngôn luận:</h6> Chỉ xóa bài viết khi
+                vi phạm quy tắc, gây ảnh hưởng tiêu cực hoặc vi phạm pháp luật.
+              </li>
+              <li>
+                <h6>Giữ gìn sự minh bạch:</h6> Thông báo rõ lý do xóa bài, đảm
+                bảo sự công bằng và tránh nghi ngờ kiểm duyệt.
+              </li>
+              <li>
+                <h6>Bảo vệ quyền riêng tư:</h6> Tránh tiết lộ thông tin cá nhân
+                nhạy cảm.
+              </li>
+              <li>
+                <h6>Lường trước ảnh hưởng:</h6> Xóa bài có thể ảnh hưởng đến
+                thảo luận, tranh luận hoặc chia sẻ thông tin hữu ích.
+              </li>
+              <li>
+                <h6>Cân nhắc trách nhiệm pháp lý:</h6> Tránh vi phạm luật pháp
+                hoặc gây thiệt hại cho người khác.
+              </li>
+            </ul>
+            <p>
+              Nút xóa là công cụ mạnh mẽ nhưng đi kèm trách nhiệm to lớn. Hãy sử
+              dụng nó một cách có ý thức, minh bạch và tôn trọng quyền lợi cộng
+              đồng.
+            </p>
+            <h6 style={{ color: "red" }}>Bạn chắc chắn muốn xóa chứ!</h6>
+          </CModalBody>
+          <CModalFooter>
+            <CButton
+              color="secondary"
+              onClick={() => this.setState({ visible: false })}
+            >
+              Close
+            </CButton>
+            <CButton
+              color="primary"
+              onClick={() => {
+                this.setState({ visible: false, isDelete: true });
+                makeRequest(
+                  removePostAsync,
+                  this.state.detailData.posterId,
+                  this.state.detailData.id
+                );
+              }}
+            >
+              Save changes
+            </CButton>
+          </CModalFooter>
+        </CModal>
       </>
     );
   }

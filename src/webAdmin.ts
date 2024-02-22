@@ -847,6 +847,23 @@ export async function getAllRoomchatAsync(userId: string, accessToken: string) {
             }
             id
             title
+            data {
+                id
+                userId
+                isDisplay
+                content
+                fileUrl
+                created_at
+                updated_at
+                interaction {
+                    id
+                    content
+                    userId
+                    isDisplay
+                    created_at
+                    updated_at
+                }
+            }
         }
     }`;
 

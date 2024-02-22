@@ -30,12 +30,14 @@ function PostDetail(props){
         <CListGroupItem>Post by id: {props.detailData.posterId}</CListGroupItem>
       </CListGroup>
       <CCardBody>
-        <CLink
-              href={props.detailData.img}
-              target="_blank"
-            >
-              Here image link
-          </CLink>
+        {props.detailData.img && 
+          <CLink
+                href={props.detailData.img}
+                target="_blank"
+              >
+                Here image link
+            </CLink>
+        }
       </CCardBody>
     </CCard>
   );

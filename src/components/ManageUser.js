@@ -47,7 +47,7 @@ class ManageUser extends React.Component {
         <CForm className="row g-3">
           <CCol xs="auto" style={{flexGrow: 1}}>
             <CFormLabel htmlFor="input" className="visually-hidden"></CFormLabel>
-            <CFormInput type="text" id="input" placeholder="Enter to find" onChange={(e) => this.setState({search: e.target.value})} />
+            <CFormInput type="text" id="input" placeholder="Enter to find" onChange={(e) => this.setState({search: e.target.value.trim()})} />
           </CCol>
           <CCol>
             <CFormSelect 
@@ -66,7 +66,7 @@ class ManageUser extends React.Component {
                 .then((item) => {
                   const newData = [{
                       id: item.id,
-                      avatar: { src: item.detail.avatarUrl, status: "success" },
+                      avatar: { src: item.detail.avatarUrl, status: item.isOnline ? "success" : 'danger' },
                       user: {
                         name: item.detail.name,
                         new: true,
@@ -140,7 +140,7 @@ class ManageUser extends React.Component {
                   const newData = data.map((item) => {
                     return {
                       id: item.id,
-                      avatar: { src: item.detail.avatarUrl, status: "success" },
+                      avatar: { src: item.detail.avatarUrl, status: item.isOnline ? "success" : 'danger' },
                       user: {
                         name: item.detail.name,
                         new: true,
