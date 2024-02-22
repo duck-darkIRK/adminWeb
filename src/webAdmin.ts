@@ -51,7 +51,7 @@ class AdminDto {
 
 
 export async function LoginAsync(dto: LoginDto) {
-    const endpoint = 'http://103.155.161.116:3434/graphql';
+    const endpoint = 'https://api.blackcatstudio.site/graphql';
 
     const QUERY =       
         `query Login ($email: String!, $password: String!) {
@@ -98,13 +98,14 @@ export async function LoginAsync(dto: LoginDto) {
 }
 
 export async function getUserDataByIdAsync(userId: string, accessToken: string) {
-    const endpoint = 'http://103.155.161.116:3434/graphql';
+    const endpoint = 'https://api.blackcatstudio.site/graphql';
 
     const QUERY = `
         query GetUser($userId: String!) {
             getUser(id: $userId) {
                 id
                 email
+                role
                 detail {
                     name
                     nickName
@@ -151,7 +152,7 @@ export async function getUserDataByIdAsync(userId: string, accessToken: string) 
 
 
 export async function searchUserAsync(content: string, accessToken: string) {
-    const endpoint = 'http://103.155.161.116:3434/graphql';
+    const endpoint = 'https://api.blackcatstudio.site/graphql';
 
     const QUERY = `
     query FindUser ($content: String!){
@@ -200,7 +201,7 @@ export async function searchUserAsync(content: string, accessToken: string) {
 }
 
 export async function searchPostAsync(content: string, accessToken: string) {
-    const endpoint = 'http://103.155.161.116:3434/graphql';
+    const endpoint = 'https://api.blackcatstudio.site/graphql';
 
     const QUERY = `
     query SearchPost ($content: String!) {
@@ -277,7 +278,7 @@ export async function banUserAsync(dto: CommandDto, accessToken: string,) {
         };
       
         const formDataString = querystring.stringify(formDataObject);
-        const response = await axios.post(`http://103.155.161.116:3434/auth/banUser`, formDataString, {
+        const response = await axios.post(`https://api.blackcatstudio.site/auth/banUser`, formDataString, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -301,7 +302,7 @@ export async function unbanUserAsync(dto: CommandDto, accessToken: string,) {
       
         const formDataString = querystring.stringify(formDataObject);
 
-        const response = await axios.post(`http://103.155.161.116:3434/auth/unbanUser`, formDataString, {
+        const response = await axios.post(`https://api.blackcatstudio.site/auth/unbanUser`, formDataString, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -322,7 +323,7 @@ export async function addAdminAsync(dto: AdminDto, accessToken: string,) {
 
         const formDataString = querystring.stringify(formDataObject);
 
-        const response = await axios.post(`http://103.155.161.116:3434/auth/addAdmin`, formDataString, {
+        const response = await axios.post(`https://api.blackcatstudio.site/auth/addAdmin`, formDataString, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -346,7 +347,7 @@ export async function removeAdminAsync(dto: CommandDto, accessToken: string,) {
         };
       
         const formDataString = querystring.stringify(formDataObject);
-        const response = await axios.post(`http://103.155.161.116:3434/auth/removeAdmin`, formDataString, {
+        const response = await axios.post(`https://api.blackcatstudio.site/auth/removeAdmin`, formDataString, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -361,7 +362,7 @@ export async function removeAdminAsync(dto: CommandDto, accessToken: string,) {
 };
 
 export async function updateAccessTokenAsync(userId: string, refreshToken: string) {
-    const endpoint = 'http://103.155.161.116:3434/graphql';
+    const endpoint = 'https://api.blackcatstudio.site/graphql';
 
     const MUTATION = `
         query Refresh ($userId: String!) {
@@ -408,7 +409,7 @@ export async function updateAccessTokenAsync(userId: string, refreshToken: strin
 
 
 export async function getAllUserAsync(userId: string, assessToken: string) {
-    const endpoint = 'http://103.155.161.116:3434/graphql';
+    const endpoint = 'https://api.blackcatstudio.site/graphql';
 
     const MUTATION = `
         query GetAllUser ($userId: String!){
@@ -461,7 +462,7 @@ export async function getAllUserAsync(userId: string, assessToken: string) {
 }
 
 export async function getAllPostAsync(userId: string, accessToken: string) {
-    const endpoint = 'http://103.155.161.116:3434/graphql';
+    const endpoint = 'https://api.blackcatstudio.site/graphql';
 
     const MUTATION = `
         query GetAllPost ($userId: String!){
@@ -527,9 +528,70 @@ export async function getAllPostAsync(userId: string, accessToken: string) {
         throw error;
     }
 }
+export async function getUpAllRoomchatAsync(userId: string, accessToken: string) {
+    const endpoint = 'https://api.blackcatstudio.site/graphql';
+
+    const MUTATION = `
+        query GetAllRoomchat($id: String!) {
+            getAllRoomchat(id: $id) {
+                id
+                title
+                isDisplay
+                isSingle
+                isBlock
+                ownerUserId
+                description
+                imgDisplay
+                member
+                memberNickname
+                role
+                created_at
+                updated_at
+                data {
+                    id
+                    userId
+                    roomId
+                    isDisplay
+                    content
+                    fileUrl
+                    created_at
+                    updated_at
+                }
+                memberOut {
+                    memberId
+                    messageCount
+                    created_at
+                    updated_at
+                }
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: MUTATION,
+                variables: {
+                    id: userId
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.getAllRoomchat;
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
 
 export async function getPostAsync(postId: string, accessToken: string) {
-    const endpoint = 'http://103.155.161.116:3434/graphql';
+    const endpoint = 'https://api.blackcatstudio.site/graphql';
 
     const FIND_POST_QUERY = `
     query GetPostById ($id: String!){
@@ -598,7 +660,7 @@ export async function getPostAsync(postId: string, accessToken: string) {
 }
 
 export async function removeRoomchatAsync(userId: string, roomchatId: string, accessToken: string) {
-    const endpoint = 'http://103.155.161.116:3434/graphql';
+    const endpoint = 'https://api.blackcatstudio.site/graphql';
 
     const GET_USER_QUERY = `
     mutation RemoveRoomChat ($roomchatId: String!, $title: String!, $userId: String!) {
@@ -641,7 +703,7 @@ export async function removeRoomchatAsync(userId: string, roomchatId: string, ac
 }
 
 export async function removePostAsync(userId: string, postId: string, accessToken: string) {
-    const endpoint = 'http://103.155.161.116:3434/graphql';
+    const endpoint = 'https://api.blackcatstudio.site/graphql';
 
     const QUERY = `
         mutation RemovePost ($userId: String!, $postId: String!, $fileUrl: [String!]!) {
@@ -684,7 +746,7 @@ export async function removePostAsync(userId: string, postId: string, accessToke
 }
 
 export async function getRoomchatAsync(id: string, accessToken: string) {
-    const endpoint = 'http://103.155.161.116:3434/graphql';
+    const endpoint = 'https://api.blackcatstudio.site/graphql';
 
     const QUERY = `
         query GetRomchatById ($roomchatId: String!) {
@@ -756,7 +818,7 @@ export async function getRoomchatAsync(id: string, accessToken: string) {
 
 
 export async function getRoomchatByTitleAsync(id: string, accessToken: string) {
-    const endpoint = 'http://103.155.161.116:3434/graphql';
+    const endpoint = 'https://api.blackcatstudio.site/graphql';
 
     const QUERY = `
         query GetRomchatByTitle ($roomchatId: String!) {
@@ -823,7 +885,7 @@ export async function getRoomchatByTitleAsync(id: string, accessToken: string) {
 }
 
 export async function getAllRoomchatAsync(userId: string, accessToken: string) {
-    const endpoint = 'http://103.155.161.116:3434/graphql';
+    const endpoint = 'https://api.blackcatstudio.site/graphql';
 
     const QUERY = `
     query GetAllRomchatByUserId ($userId: String!) {

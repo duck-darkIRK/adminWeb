@@ -9,7 +9,7 @@ import CIcon from "@coreui/icons-react";
 import { cilArrowBottom, cilArrowTop } from "@coreui/icons";
 import { getDateFromOffset } from "../../util/date"
 import { getCookie, makeRequest } from "../../util/makeRequest.js";
-import { getAllPostAsync, getAllUserAsync } from "../../webAdmin.ts";
+import { getAllPostAsync, getAllUserAsync, getUpAllRoomchatAsync } from "../../webAdmin.ts";
 
 class UserParameter extends React.Component {
   getDefaultDate() {
@@ -49,6 +49,19 @@ class UserParameter extends React.Component {
             tmpNewPostData.push(data.filter(item => new Date(item.created_at) >= tmpPreDate && new Date(item.created_at) <= tmpNextDate).length)
           }
           this.setState({ numberPostPerDay: tmpNewPostData })
+        })
+        .catch((error) => alert(error))
+        makeRequest(getUpAllRoomchatAsync, getCookie("id"))
+        .then((data) => {
+          let tmpRoomchatData = [];
+          for (let i = 8; i > 0; i--) {
+            let tmpPreDate = new Date(today);
+            tmpPreDate.setDate(today.getDate() - i);
+            let tmpNextDate = new Date(today);
+            tmpNextDate.setDate(today.getDate() - i + 1);
+            tmpRoomchatData.push(data.filter(item => new Date(item.created_at) >= tmpPreDate && new Date(item.created_at) <= tmpNextDate).length)
+          }
+          this.setState({ numberGroupPerDay: tmpRoomchatData })
         })
         .catch((error) => alert(error))
     }
