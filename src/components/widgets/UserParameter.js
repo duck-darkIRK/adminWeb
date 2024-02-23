@@ -152,7 +152,7 @@ class UserParameter extends React.Component {
                     },
                     y: {
                       min: 0,
-                      max: 100,
+                      max: Math.max(...this.state.numberUserPerDay) + 1,
                       display: false,
                       grid: {
                         display: false,
@@ -242,7 +242,7 @@ class UserParameter extends React.Component {
                     },
                     y: {
                       min: 0,
-                      max: 100,
+                      max: Math.max(...this.state.numberPostPerDay) + 1,
                       display: false,
                       grid: {
                         display: false,
@@ -325,7 +325,7 @@ class UserParameter extends React.Component {
                     },
                     y: {
                       min: 0,
-                      max: 100,
+                      max: Math.max(...this.state.numberGroupPerDay) + 1,
                       display: false,
                     },
                   },
