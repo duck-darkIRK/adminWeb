@@ -98,7 +98,7 @@ class ManageGroup extends React.Component {
                               id: data.id
                             },
                             activity: data.updated_at,
-                            member: data.member.length,
+                            member: Array.from(new Set(data.member)).length,
                             messages: data.data.length,
                             adminId: data.ownerUserId
                           },
@@ -114,7 +114,13 @@ class ManageGroup extends React.Component {
                             return []
                           } else { return data }
                         } else {
-                          return data.filter(item => {
+                          return data.map(item => {
+                            let newMemberData = Array.from(new Set(item.member))
+                            return {
+                              ...item,
+                              member: newMemberData
+                            }
+                          }).filter(item => {
                             return !item.isSingle
                         })}
                       })
